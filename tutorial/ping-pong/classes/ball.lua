@@ -1,17 +1,5 @@
 Ball = Object:extend()
 
--- Pre-defined vertical velocities for each segment (assuming base speed scale)
-local SEGMENT_VELOCITIES = {
-    -3.0, -- Segment 0 (Extreme Top): Sharp upward bounce
-    -1.5, -- Segment 1 (Inner Top): Moderate upward bounce
-    -0.5, -- Segment 2 (Outer Top Middle): Gentle upward bounce
-    0.0,  -- Segment 3 (Center Top): Flat bounce
-    0.0,  -- Segment 4 (Center Bottom): Flat bounce
-    0.5,  -- Segment 5 (Outer Bottom Middle): Gentle downward bounce
-    1.5,  -- Segment 6 (Inner Bottom): Moderate downward bounce
-    3.0,  -- Segment 7 (Extreme Bottom): Sharp downward bounce
-};
-
 function Ball:new(x, y)
     self.x = x
     self.y = y
@@ -38,13 +26,13 @@ function Ball:update(dt)
         self.y = (Window_height / 2) - Ball_radius
         self.y_velocity = 0
         self.x_velocity = -1
-        increasePlayer1Score()
+        increasePlayer2Score()
     elseif self.x > (Window_width - Ball_radius) then
         self.x = (Window_width / 2) - Ball_radius
         self.y = (Window_height / 2) - Ball_radius
         self.y_velocity = 0
         self.x_velocity = 1
-        increasePlayer2Score()
+        increasePlayer1Score()
     end
 end
 
