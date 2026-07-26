@@ -17,7 +17,7 @@ function Ball:update(dt)
 
     if self.y >= Window_height - Ball_radius then
         self.y_velocity = self.y_velocity * -1
-    elseif self.y <= 0 then
+    elseif self.y <= Paddle_top_limit + Ball_radius then
         self.y_velocity = self.y_velocity * -1
     end
 
@@ -34,6 +34,13 @@ function Ball:update(dt)
         self.x_velocity = 1
         increasePlayer1Score()
     end
+end
+
+function Ball:reset()
+    self.x = (Window_width / 2) - Ball_radius
+    self.y = (Window_height / 2) - Ball_radius
+    self.y_velocity = 0
+    self.x_velocity = (math.random(0, 1) == 1) and 1 or -1
 end
 
 -- This function will return the paddle that go hit.

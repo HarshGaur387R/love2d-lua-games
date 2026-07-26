@@ -12,6 +12,10 @@ function Player:new(x, y, upKey, downKey)
     self.downKey = downKey
 end
 
+function Player:reset()
+    self.y = Paddle_initial_y
+end
+
 function Player:draw()
     love.graphics.rectangle("fill", self.x, self.y, self.width, self.height)
 end

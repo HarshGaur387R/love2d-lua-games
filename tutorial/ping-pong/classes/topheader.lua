@@ -34,6 +34,11 @@ function TopHeader:increaseP2Score()
     self.p2_score = self.p2_score + 1
 end
 
+function TopHeader:reset()
+    self.p1_score = 0
+    self.p2_score = 0
+end
+
 function TopHeader:draw()
     -- Using for-loop to make lines thick
 
@@ -48,7 +53,7 @@ function TopHeader:draw()
     end
 
     love.graphics.setFont(self.font)
-    
+
     -- Show names and scores on screen
     local font = love.graphics.getFont()
     player1text = love.graphics.newText(font)
