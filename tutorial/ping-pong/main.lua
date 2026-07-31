@@ -104,6 +104,10 @@ function love.keypressed(key)
         topheader:reset()
         Screen = "running"
     end
+
+    if key == "escape" then
+        love.event.quit()
+    end
 end
 
 function love.draw()
