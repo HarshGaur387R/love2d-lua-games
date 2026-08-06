@@ -8,5 +8,20 @@ function Pipe:new(x, y, isFlipped)
 end
 
 function Pipe:draw()
-    
+    if self.isFlipped then
+        love.graphics.draw(
+            self.image,
+            self.x,
+            self.y,
+            math.pi,
+            -1,
+            1
+        )
+    else
+        love.graphics.draw(self.image, self.x, self.y, 0)
+    end
+end
+
+function Pipe:update(dt)
+    self.x = self.x - GROUND_SCROLL_SPEED * dt
 end
