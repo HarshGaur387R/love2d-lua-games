@@ -12,9 +12,7 @@ function love.load()
 
     Pipes = {} -- This table contains set of pipes eg. {{upPipe1, downPipe1}, {upPipe2, downPipe2}}
     PIPES_GAP = 100
-    PIPES_SET_GAP = 400
-    Timer = 0
-    TIME_LIMIT = 3
+    PIPES_SET_GAP = 100
 
     WINDOW_WIDTH = love.graphics.getWidth()
     WINDOW_HEIGHT = love.graphics.getHeight()
@@ -79,26 +77,26 @@ function love.update(dt)
     BackgroundScroll = BackgroundScroll + BACKGROUND_SCROLL_SPEED * dt
     GROUND_SCROLL = GROUND_SCROLL + GROUND_SCROLL_SPEED * dt
 
-    -- Inserting new set of pipe every 2 seconds
-    Timer = Timer + dt
-    if Timer > TIME_LIMIT then
+    -- If the distance is equals to the given gap then 
+    Last_set_distance = BASE_WIDTH - (Pipes[#Pipes].p1.x + Pipes[#Pipes].p1.image:getWidth())
+
+    if math.floor(Last_set_distance) == PIPES_SET_GAP then
         local pipe1 = Pipe(BASE_WIDTH, BASE_HEIGHT / 2, false)
         local pipe2 = Pipe(BASE_WIDTH, BASE_HEIGHT / 2, true)
         table.insert(Pipes, { p1 = pipe1, p2 = pipe2 })
-        Timer = 0
     end
-
+    
     for index, set_of_pipe in ipairs(Pipes) do
         set_of_pipe.p1:update(dt)
         set_of_pipe.p2:update(dt)
-
+        
         if set_of_pipe.p1.x + set_of_pipe.p1.image:getWidth() < 0 then
             table.remove(Pipes, index)
         end
     end
-
+    
     Flappy_bird:update(dt)
-
+    
     -- Empty keysPressed table at every update.
     love.keyboard.keysPressed = {}
 end
@@ -106,22 +104,23 @@ end
 function love.draw()
     Push:apply("start")
     love.graphics.clear(1, 1, 1, 1)
-
+    
     -- Background image
     love.graphics.draw(Background_image, -BackgroundScroll, 0)
-
+    
     -- Path Image
     love.graphics.draw(Ground_image, -GROUND_SCROLL, BASE_HEIGHT - Ground_image:getHeight())
-
+    
     Flappy_bird:draw()
-
+    
     for _, pipeSet in ipairs(Pipes) do
         pipeSet.p1:draw()
         pipeSet.p2:draw()
     end
-
+    
     -- Show number of pipes on screen
     love.graphics.print("Pipes: " .. #Pipes, 10, 10)
+    love.graphics.print("last_set_distance: " .. Last_set_distance, 10, 20)
 
     Push:apply("end")
 end
