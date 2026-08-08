@@ -5,6 +5,7 @@ function Pipe:new(x, y, isFlipped)
     self.y = y
     self.isFlipped = isFlipped
     self.image = love.graphics.newImage('images/pipe.png')
+    self.isFlagged = false -- Set to true when bird.x > pipe.x + pipe.image:getWidth()
 end
 
 function Pipe:draw()
