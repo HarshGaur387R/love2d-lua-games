@@ -10,6 +10,13 @@ function love.load()
     math.randomseed(os.time())
 
     love.keyboard.keysPressed = {}
+    
+    STATES = {
+        'titleScreen',
+        'play',
+        'pause',
+        'Score'
+    }
 
     Pipes = {} -- This table contains set of pipes eg. {{upPipe1, downPipe1}, {upPipe2, downPipe2}}
     PIPES_SET_GAP = 100
@@ -83,8 +90,8 @@ function love.update(dt)
         local upperY = math.random(MINIMUM_PIPE_HEIGHT, BASE_HEIGHT - MINIMUM_PIPE_HEIGHT)
         local pipe1 = Pipe(BASE_WIDTH, upperY - PIPE_GAP/2, true) -- Upper pipe
 
-        local available_space = (BASE_HEIGHT - MINIMUM_PIPE_HEIGHT) - upperY
-        local pipe2 = Pipe(BASE_WIDTH, (BASE_HEIGHT - MINIMUM_PIPE_HEIGHT ) - available_space + PIPE_GAP/2, false) -- Lower pipe
+        -- local available_space = (BASE_HEIGHT - MINIMUM_PIPE_HEIGHT) - upperY
+        local pipe2 = Pipe(BASE_WIDTH, upperY + PIPE_GAP/2, false) -- Lower pipe
         table.insert(Pipes, { p1 = pipe1, p2 = pipe2 })
     end
 
