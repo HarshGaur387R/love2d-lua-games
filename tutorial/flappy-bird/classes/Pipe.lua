@@ -8,6 +8,7 @@ function Pipe:new(x, y, isFlipped)
 end
 
 function Pipe:draw()
+
     if self.isFlipped then
         love.graphics.draw(
             self.image,
