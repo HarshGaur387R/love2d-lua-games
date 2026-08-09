@@ -17,6 +17,7 @@ function love.load()
     hugeFont = love.graphics.newFont('fonts/flappy.ttf', 56)
 
     love.keyboard.keysPressed = {}
+    love.mouse.buttonsPressed = {}
 
     Score = 0
     STATES = {
@@ -96,6 +97,18 @@ function love.keypressed(key)
     end
 end
 
+function love.mousepressed(x, y, button)
+    love.mouse.buttonsPressed[button] = true
+end
+
+love.mouse.wasPressed = function(key)
+    if love.mouse.buttonsPressed[key] then
+        return true
+    else
+        return false
+    end
+end
+
 love.keyboard.wasPressed = function(key)
     if love.keyboard.keysPressed[key] then
         return true
@@ -169,6 +182,7 @@ function love.update(dt)
 
     -- Empty keysPressed table at every update.
     love.keyboard.keysPressed = {}
+    love.mouse.buttonsPressed = {}
 end
 
 function love.draw()
