@@ -29,7 +29,7 @@ function StartState:update(dt)
 
     if love.keyboard.wasPressed("enter") or love.keyboard.wasPressed("return") then
         if highLighted == 1 then
-            GStateMachine:change("playState")
+            GStateMachine:change("selectPedalState")
             GSounds['confirm']:play()
         end
     end
