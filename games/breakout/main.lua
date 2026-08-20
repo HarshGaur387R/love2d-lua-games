@@ -62,7 +62,6 @@ function love.load()
         ['recover'] = love.audio.newSource('sounds/recover.wav', 'static'),
         ['high-score'] = love.audio.newSource('sounds/high_score.wav', 'static'),
         ['pause'] = love.audio.newSource('sounds/pause.wav', 'static'),
-
         ['music'] = love.audio.newSource('sounds/music.wav', 'static')
     }
 
@@ -79,7 +78,8 @@ function love.load()
     -- 6. 'game-over' (the player has lost; display score and allow restart)
     GStateMachine = StateMachine {
         ['startState'] = function() return StartState() end,
-        ['playState'] = function() return PlayState() end
+        ['playState'] = function() return PlayState() end,
+        ['selectPedalState'] = function() return SelectPedalState() end
     }
     GStateMachine:change('startState')
 
