@@ -6,3 +6,7 @@ function PlayState:update(dt) end
 function PlayState:render()
     love.graphics.print("Hello from PlayState", 10, 10)
 end
+
+-- Create Paddle and ball class
+-- render them
+-- create quads making functions 
