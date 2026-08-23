@@ -10,12 +10,14 @@ function StateMachine:new(states)
     }
     self.states = states or {}
     self.current = self.empty
+    self.currentStateName = ''
 end
 
 function StateMachine:change(stateName, enterParams)
     assert(self.states[stateName])
     self.current:exit()
     self.current = self.states[stateName]()
+    self.currentStateName = stateName
     self.current:enter(enterParams)
 end
 
