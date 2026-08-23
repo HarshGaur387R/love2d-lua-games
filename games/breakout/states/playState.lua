@@ -1,12 +1,16 @@
 local BaseState = require("states.baseState")
+require "classes.paddle"
+
 PlayState = BaseState:extend()
 
-function PlayState:update(dt) end
-
-function PlayState:render()
-    love.graphics.print("Hello from PlayState", 10, 10)
+function PlayState:enter(selectedPaddleQuad)
+    self.paddle = Paddle(selectedPaddleQuad)
 end
 
--- Create Paddle and ball class
--- render them
--- create quads making functions 
+function PlayState:update(dt)
+    self.paddle:update(dt)
+end
+
+function PlayState:render()
+    self.paddle:render()
+end
