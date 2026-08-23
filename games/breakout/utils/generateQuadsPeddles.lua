@@ -5,7 +5,7 @@ function GenerateQuadsPaddles(atlas)
         local PaddleStarting_Y = 64
         local PaddlesHeight = 15
 
-        for j = 1, 4, 1 do
+        for _ = 1, 4, 1 do
             for i = 1, 4, 1 do
                 if i == 4 then
                     PaddleStarting_Y = PaddleStarting_Y + PaddlesHeight + 1
