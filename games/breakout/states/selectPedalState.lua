@@ -19,6 +19,8 @@ function SelectPedalState:update(dt)
         if self.peddleIndex + 4 < 16 then
             self.peddleIndex = self.peddleIndex + 4
         end
+    elseif love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
+        GStateMachine:change('playState', self.Peddles[self.peddleIndex])
     end
 end
 
