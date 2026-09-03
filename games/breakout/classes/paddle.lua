@@ -10,7 +10,7 @@ function Paddle:new(paddleQuad)
 end
 
 function Paddle:update(dt)
-    if GStateMachine.currentStateName == "playState" then
+    if GStateMachine.currentStateName == "playState" or GStateMachine.currentStateName == "runningState" then
         if love.keyboard.isDown('left') then
             self.x = self.x - self.velocity * dt
             if self.x <= 0 then
