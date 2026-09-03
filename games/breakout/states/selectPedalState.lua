@@ -20,7 +20,14 @@ function SelectPedalState:update(dt)
             self.peddleIndex = self.peddleIndex + 4
         end
     elseif love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
-        GStateMachine:change('playState', self.Peddles[self.peddleIndex])
+        local selectedPaddleQuad = self.Peddles[self.peddleIndex]
+
+        -- Using default red color ball
+        local selectedBallQuad = love.graphics.newQuad(96, 48, 8, 8, GTextures['main']:getWidth(),
+            GTextures['main']:getHeight())
+        local params = { selectedPaddleQuad = selectedPaddleQuad, selectedBallQuad = selectedBallQuad }
+
+        GStateMachine:change('playState', params)
     end
 end
 

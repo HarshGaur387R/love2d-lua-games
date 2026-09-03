@@ -78,8 +78,9 @@ function love.load()
     -- 6. 'game-over' (the player has lost; display score and allow restart)
     GStateMachine = StateMachine {
         ['startState'] = function() return StartState() end,
+        ['selectPedalState'] = function() return SelectPedalState() end,
         ['playState'] = function() return PlayState() end,
-        ['selectPedalState'] = function() return SelectPedalState() end
+        ['runningState'] = function() return RunningState() end
     }
     GStateMachine:change('startState')
 
