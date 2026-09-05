@@ -58,17 +58,12 @@ function RunningState:update(dt)
         self.healthBar.remainingHearts = self.healthBar.remainingHearts - 1
 
         if self.healthBar.remainingHearts == 0 then
-            -- if all hearts are lost then show game over screen
+            GStateMachine:change("gameOverState")
         elseif self.healthBar.remainingHearts > 0 then
             self.isWaiting = true
             self.ball:reset()
             self.paddle:reset()
         end
-
-        -- reset cords of paddle and ball
-        -- reset velocity back to 0
-        -- wait for space command to start again.
-        -- on space pressed, check if game is waiting or not then proceed
     end
 end
 
