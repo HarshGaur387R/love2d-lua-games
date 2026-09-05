@@ -27,7 +27,7 @@ function SelectPedalState:update(dt)
             GTextures['main']:getHeight())
         local params = { selectedPaddleQuad = selectedPaddleQuad, selectedBallQuad = selectedBallQuad }
 
-        GStateMachine:change('playState', params)
+        GStateMachine:change('runningState', params)
     end
 end
 
