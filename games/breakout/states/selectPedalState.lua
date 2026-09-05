@@ -19,7 +19,7 @@ function SelectPedalState:update(dt)
         if self.peddleIndex + 4 < 16 then
             self.peddleIndex = self.peddleIndex + 4
         end
-    elseif love.keyboard.wasPressed('return') or love.keyboard.wasPressed('enter') then
+    elseif love.keyboard.wasPressed('space') then
         local selectedPaddleQuad = self.Peddles[self.peddleIndex]
 
         -- Using default red color ball
@@ -33,7 +33,7 @@ end
 
 function SelectPedalState:render()
     love.graphics.setFont(Gfonts['medium'])
-    love.graphics.print("Press ENTER to select peddle", VIRTUAL_WIDTH - 340, 30)
+    love.graphics.print("Press SPACE to select peddle", VIRTUAL_WIDTH - 340, 30)
     love.graphics.draw(GTextures['arrows'], self.leftArrow, 30, VIRTUAL_HEIGHT / 2)
     love.graphics.draw(GTextures['arrows'], self.rightArrow, VIRTUAL_WIDTH - 54, VIRTUAL_HEIGHT / 2)
 
