@@ -79,7 +79,6 @@ function love.load()
     GStateMachine = StateMachine {
         ['startState'] = function() return StartState() end,
         ['selectPedalState'] = function() return SelectPedalState() end,
-        ['playState'] = function() return PlayState() end,
         ['runningState'] = function() return RunningState() end
     }
     GStateMachine:change('startState')
