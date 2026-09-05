@@ -31,6 +31,9 @@ function StartState:update(dt)
         if highLighted == 1 then
             GStateMachine:change("selectPedalState")
             GSounds['confirm']:play()
+        elseif highLighted == 2 then
+            GStateMachine:change("highScoreState")
+            GSounds['confirm']:play()
         end
     end
 end
