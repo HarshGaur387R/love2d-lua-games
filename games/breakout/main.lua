@@ -22,6 +22,7 @@ function love.load()
     -- load up the graphics we'll be using throughout our states
     GTextures = {
         ['background'] = love.graphics.newImage('assets/images/background.png'),
+        ['block'] = love.graphics.newImage('assets/images/blocks.png'),
         ['main'] = love.graphics.newImage('assets/images/breakout.png'),
         ['arrows'] = love.graphics.newImage('assets/images/arrows.png'),
         ['hearts'] = love.graphics.newImage('assets/images/hearts.png'),
