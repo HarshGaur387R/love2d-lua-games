@@ -1,0 +1,4 @@
+Object = require "libs.classic"
+require "utilities.get-arrow-quads"
+require "src.constants"
+require "classes.Arrow"
