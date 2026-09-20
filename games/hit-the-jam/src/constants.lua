@@ -1,7 +1,7 @@
 VIRTUAL_WIDTH = 360
 VIRTUAL_HEIGHT = 640
-ARROW_HEIGHT = 126
-ARROW_WIDTH = 96
+ARROW_HEIGHT = 123
+ARROW_WIDTH = 123
 
 DIRECTIONS = {
     "up",
@@ -12,7 +12,7 @@ DIRECTIONS = {
 
 ARROW_COLORS = {
     ["up"] = "green",
-    ["down"] = "red",
-    ["left"] = "blue",
-    ["right"] = "orange"
+    ["down"] = "blue",
+    ["left"] = "orange",
+    ["right"] = "red"
 }

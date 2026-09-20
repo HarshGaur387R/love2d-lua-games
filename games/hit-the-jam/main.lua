@@ -13,12 +13,13 @@ function love.load()
     })
 
     GSprites = {
-        ["Arrows"] = love.graphics.newImage("assets/images/arrows.png")
+        ["Arrows"] = love.graphics.newImage("assets/images/arrow-buttons.png")
     }
 
-    LeftArrow = Arrow(10, VIRTUAL_HEIGHT - ARROW_HEIGHT, GetArrowQuads("left"), function() end)
-    UpArrow = Arrow(90, VIRTUAL_HEIGHT - ARROW_HEIGHT, GetArrowQuads("up"), function() end)
-    RightArrow = Arrow(200, VIRTUAL_HEIGHT - ARROW_HEIGHT, GetArrowQuads("right"), function() end)
+    UpArrow = Arrow(10, VIRTUAL_HEIGHT - ARROW_HEIGHT, GetArrowQuads("up"), function() end)
+    LeftArrow = Arrow(90, VIRTUAL_HEIGHT - ARROW_HEIGHT, GetArrowQuads("left"), function() end)
+    DownArrow = Arrow(180, VIRTUAL_HEIGHT - ARROW_HEIGHT, GetArrowQuads("down"), function() end)
+    RightArrow = Arrow(270, VIRTUAL_HEIGHT - ARROW_HEIGHT, GetArrowQuads("right"), function() end)
 end
 
 function love.resize(width, height)
@@ -38,8 +39,9 @@ function love.draw()
     love.graphics.clear(1, 0, 0, 1) -- red, canvas color, testing only
     love.graphics.setFont(pixelFont)
 
-    LeftArrow:render()
-    RightArrow:render()
     UpArrow:render()
+    LeftArrow:render()
+    DownArrow:render()
+    RightArrow:render()
     push.finish()
 end
