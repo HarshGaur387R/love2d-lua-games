@@ -1,5 +1,5 @@
 ---@class MarginBox:Object
----By default MarginBox will spread out the elements inside it.
+---By default MarginBox will spread out the elements inside it and takes full space.
 MarginBox = Object:extend()
 
 ---@alias Type
