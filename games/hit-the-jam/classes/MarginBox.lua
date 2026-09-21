@@ -21,8 +21,26 @@ function MarginBox:new(type, padding, gap, elements)
     self.gap = gap
     self.elements = elements
 
-    if #self.elements > 1 then
+    local number_of_elements = #self.elements
+
+    if number_of_elements > 1 then
+        local elementWidth = ARROW_WIDTH
+        local total_gap = 0
+        local i = 0
+        local left_pad = 3
         -- run gapping algorithm if there are more than one elements
+
+        for _, element in ipairs(self.elements) do
+            if i > 0 and i < number_of_elements then
+                total_gap = self.gap * i
+            end
+
+            if i == number_of_elements then
+                total_gap = 0
+            end
+            element.x = left_pad + total_gap + (elementWidth * element.scale) * i
+            i = i + 1
+        end
     end
 end
 
@@ -35,5 +53,8 @@ end
 
 ---Renders all the element at the calculated positions.
 function MarginBox:render()
-
+    for _, element in ipairs(self.elements) do
+        love.graphics.print(love.graphics.getWidth(), 100, 200)
+        element:render()
+    end
 end
