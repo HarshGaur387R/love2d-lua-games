@@ -11,6 +11,7 @@ function Arrow:new(x, y, quads, onClick)
     self.unActiveQuad = quads[1]
     self.activeQuad = quads[2]
     self.callback = onClick
+    self.scale = 0.6
 end
 
 ---@param dt number
@@ -19,5 +20,5 @@ function Arrow:update(dt)
 end
 
 function Arrow:render()
-    love.graphics.draw(GSprites["Arrows"], self.unActiveQuad, self.x, self.y, 0, 0.6)
+    love.graphics.draw(GSprites["Arrows"], self.unActiveQuad, self.x, self.y, 0, self.scale)
 end

@@ -20,6 +20,12 @@ function love.load()
     LeftArrow = Arrow(90, VIRTUAL_HEIGHT - ARROW_HEIGHT, GetArrowQuads("left"), function() end)
     DownArrow = Arrow(180, VIRTUAL_HEIGHT - ARROW_HEIGHT, GetArrowQuads("down"), function() end)
     RightArrow = Arrow(270, VIRTUAL_HEIGHT - ARROW_HEIGHT, GetArrowQuads("right"), function() end)
+
+    ArrowsButtonBox = MarginBox("bottom-horizontal",
+        { leftPad = 10, rightPad = 10, bottomPad = 0, topPad = 0 },
+        20,
+        { UpArrow, LeftArrow, DownArrow, RightArrow }
+    )
 end
 
 function love.resize(width, height)
@@ -39,9 +45,10 @@ function love.draw()
     love.graphics.clear(1, 0, 0, 1) -- red, canvas color, testing only
     love.graphics.setFont(pixelFont)
 
-    UpArrow:render()
-    LeftArrow:render()
-    DownArrow:render()
-    RightArrow:render()
+    ArrowsButtonBox:render()
+    -- UpArrow:render()
+    -- LeftArrow:render()
+    -- DownArrow:render()
+    -- RightArrow:render()
     push.finish()
 end
