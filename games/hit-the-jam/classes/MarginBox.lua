@@ -51,10 +51,15 @@ function MarginBox:add(element)
 
 end
 
+function MarginBox:update(dt)
+    for _, element in ipairs(self.elements) do
+        element:update(dt)
+    end
+end
+
 ---Renders all the element at the calculated positions.
 function MarginBox:render()
     for _, element in ipairs(self.elements) do
-        love.graphics.print(love.graphics.getWidth(), 100, 200)
         element:render()
     end
 end
