@@ -20,6 +20,9 @@ function love.load()
     }
 
     GStateMachine:change("play")
+
+    love.keyboard.keysPressed = {}
+    love.keyboard.keysReleased = {}
 end
 
 function love.resize(width, height)
@@ -27,9 +30,37 @@ function love.resize(width, height)
 end
 
 function love.keypressed(key)
-    if key == "escape" then
+    love.keyboard.keysPressed[key] = true
+end
+
+function love.keyreleased(key)
+    love.keyboard.keysReleased[key] = true
+end
+
+function love.keyboard.wasPressed(key)
+    if love.keyboard.keysPressed[key] then
+        return true
+    else
+        return false
+    end
+end
+
+function love.keyboard.wasReleased(key)
+    if love.keyboard.keysReleased[key] then
+        return true
+    else
+        return false
+    end
+end
+
+function love.update(dt)
+    if love.keyboard.wasPressed("escape") then
         love.event.quit()
     end
+
+    GStateMachine:update(dt)
+    love.keyboard.keysPressed = {}
+    love.keyboard.keysReleased = {}
 end
 
 function love.draw()
