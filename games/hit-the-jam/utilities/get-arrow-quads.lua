@@ -19,12 +19,12 @@ function GetArrowQuads(direction)
     elseif direction == "right" then
         return {
             love.graphics.newQuad(388, 4, ARROW_WIDTH, ARROW_HEIGHT, GSprites["Arrows"]),
-            love.graphics.newQuad(388, 388, ARROW_WIDTH, ARROW_HEIGHT, GSprites["Arrows"]),
+            love.graphics.newQuad(388, 132, ARROW_WIDTH, ARROW_HEIGHT, GSprites["Arrows"]),
         }
     elseif direction == "down" then
         return {
             love.graphics.newQuad(260, 4, ARROW_WIDTH, ARROW_HEIGHT, GSprites["Arrows"]),
-            love.graphics.newQuad(260, 260, ARROW_WIDTH, ARROW_HEIGHT, GSprites["Arrows"]),
+            love.graphics.newQuad(260, 132, ARROW_WIDTH, ARROW_HEIGHT, GSprites["Arrows"]),
         }
     elseif direction == "up" then
         return {

@@ -15,17 +15,14 @@ function love.load()
     GSprites = {
         ["Arrows"] = love.graphics.newImage("assets/images/arrow-buttons.png")
     }
+    GStateMachine = StateMachine {
+        ["play"] = function() return PlayState() end
+    }
 
-    UpArrow = Arrow(10, VIRTUAL_HEIGHT - ARROW_HEIGHT, GetArrowQuads("up"), function() end)
-    LeftArrow = Arrow(90, VIRTUAL_HEIGHT - ARROW_HEIGHT, GetArrowQuads("left"), function() end)
-    DownArrow = Arrow(180, VIRTUAL_HEIGHT - ARROW_HEIGHT, GetArrowQuads("down"), function() end)
-    RightArrow = Arrow(270, VIRTUAL_HEIGHT - ARROW_HEIGHT, GetArrowQuads("right"), function() end)
+    GStateMachine:change("play")
 
-    ArrowsButtonBox = MarginBox("bottom-horizontal",
-        { leftPad = 10, rightPad = 10, bottomPad = 0, topPad = 0 },
-        20,
-        { UpArrow, LeftArrow, DownArrow, RightArrow }
-    )
+    love.keyboard.keysPressed = {}
+    love.keyboard.keysReleased = {}
 end
 
 function love.resize(width, height)
@@ -33,9 +30,37 @@ function love.resize(width, height)
 end
 
 function love.keypressed(key)
-    if key == "escape" then
+    love.keyboard.keysPressed[key] = true
+end
+
+function love.keyreleased(key)
+    love.keyboard.keysReleased[key] = true
+end
+
+function love.keyboard.wasPressed(key)
+    if love.keyboard.keysPressed[key] then
+        return true
+    else
+        return false
+    end
+end
+
+function love.keyboard.wasReleased(key)
+    if love.keyboard.keysReleased[key] then
+        return true
+    else
+        return false
+    end
+end
+
+function love.update(dt)
+    if love.keyboard.wasPressed("escape") then
         love.event.quit()
     end
+
+    GStateMachine:update(dt)
+    love.keyboard.keysPressed = {}
+    love.keyboard.keysReleased = {}
 end
 
 function love.draw()
@@ -45,10 +70,6 @@ function love.draw()
     love.graphics.clear(1, 0, 0, 1) -- red, canvas color, testing only
     love.graphics.setFont(pixelFont)
 
-    ArrowsButtonBox:render()
-    -- UpArrow:render()
-    -- LeftArrow:render()
-    -- DownArrow:render()
-    -- RightArrow:render()
+    GStateMachine:render()
     push.finish()
 end
