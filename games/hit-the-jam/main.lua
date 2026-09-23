@@ -1,5 +1,5 @@
 local push = require("libs.push")
-require "src.Dependencies"
+require "src.dependencies"
 
 local pixelFont
 
@@ -23,6 +23,8 @@ function love.load()
 
     love.keyboard.keysPressed = {}
     love.keyboard.keysReleased = {}
+    love.touch.pressedTouches = {}
+    love.touch.releasedTouches = {}
 end
 
 function love.resize(width, height)
@@ -53,14 +55,25 @@ function love.keyboard.wasReleased(key)
     end
 end
 
+function love.touchpressed(id)
+    table.insert(love.touch.pressedTouches, id)
+end
+
+function love.touchreleased(id, x, y)
+    table.insert(love.touch.releasedTouches, { id = id, x = x, y = y })
+end
+
 function love.update(dt)
     if love.keyboard.wasPressed("escape") then
         love.event.quit()
     end
 
     GStateMachine:update(dt)
+
     love.keyboard.keysPressed = {}
     love.keyboard.keysReleased = {}
+    love.touch.pressedTouches = {}
+    love.touch.releasedTouches = {}
 end
 
 function love.draw()
