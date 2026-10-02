@@ -7,11 +7,22 @@ PlayState = BaseState:extend()
 function PlayState:enter()
     local Y_Constant = 30
 
+    local json_file = io.open(CurrentChapter["levels"][CurrentLevel]["json_data"], "r")
+
+    if json_file then
+        local text = json_file:read("a")
+        json_file:close()
+    end
+
+    local level_song_path = CurrentChapter["levels"][CurrentLevel]["song"]
+    local level_song = love.audio.newSource(level_song_path, "static")
+    level_song:play()
+
     UpArrow = Arrow(10, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("up"), false, "up", function() end)
     LeftArrow = Arrow(90, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("left"), false, "left",
         function() end)
     DownArrow = Arrow(180, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("down"), false, "down",
-    function() end)
+        function() end)
     RightArrow = Arrow(270, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("right"), false, "right",
         function() end)
 

@@ -12,14 +12,18 @@ function love.load()
         canvas = false
     })
 
+    CurrentChapter = CHAPTERS[1] -- This is temp. Change it from level selection state.
+    CurrentLevel = 1
+
     GSprites = {
         ["Arrows"] = love.graphics.newImage("assets/images/arrow-buttons.png")
     }
     GStateMachine = StateMachine {
-        ["play"] = function() return PlayState() end
+        ["play"] = function() return PlayState() end,
+        ["countDown"] = function() return CountDownState() end
     }
 
-    GStateMachine:change("play")
+    GStateMachine:change("countDown")
 
     love.keyboard.keysPressed = {}
     love.keyboard.keysReleased = {}
