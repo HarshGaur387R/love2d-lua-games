@@ -1,23 +1,25 @@
 require "states.BaseState"
 require "classes.Arrow"
 require "classes.MarginBox"
+local JSON = require "utilities.decode-json"
 
 PlayState = BaseState:extend()
 
 function PlayState:enter()
     local Y_Constant = 30
+    local json_path = CurrentChapter["levels"][CurrentLevel]["json_data"]
+    local text, read_error = love.filesystem.read(json_path)
+    assert(text, string.format("Unable to open level data '%s': %s", json_path, read_error))
 
-    local json_file = io.open(CurrentChapter["levels"][CurrentLevel]["json_data"], "r")
-
-    if json_file then
-        local text = json_file:read("a")
-        json_file:close()
-    end
+    local level_data, decode_error = JSON.decode(text)
+    assert(level_data, string.format("Unable to decode level data '%s': %s", json_path, decode_error))
+    self.levelData = level_data
 
     local level_song_path = CurrentChapter["levels"][CurrentLevel]["song"]
-    local level_song = love.audio.newSource(level_song_path, "static")
-    level_song:play()
+    self.levelSong = love.audio.newSource(level_song_path, "static")
+    self.levelSong:play()
 
+    -- Assigning Arrow Buttons
     UpArrow = Arrow(10, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("up"), false, "up", function() end)
     LeftArrow = Arrow(90, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("left"), false, "left",
         function() end)
@@ -26,6 +28,7 @@ function PlayState:enter()
     RightArrow = Arrow(270, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("right"), false, "right",
         function() end)
 
+    -- Assigning them to MarginBox
     ArrowsButtonBox = MarginBox("bottom-horizontal",
         { leftPad = 10, rightPad = 10, bottomPad = 0, topPad = 0 },
         20,
@@ -38,5 +41,6 @@ function PlayState:update(dt)
 end
 
 function PlayState:render()
+    love.graphics.printf(self.levelData.bpm, 0, 100, 100)
     ArrowsButtonBox:render()
 end
