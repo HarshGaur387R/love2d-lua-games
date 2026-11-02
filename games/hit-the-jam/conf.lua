@@ -1,4 +1,5 @@
 function love.conf(t)
+    t.window.title = 'Hit The Jam'
     t.window.width = 360
     t.window.height = 640
     t.window.fullscreen = false

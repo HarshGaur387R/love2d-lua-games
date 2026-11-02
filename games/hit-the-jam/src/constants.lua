@@ -3,17 +3,30 @@ VIRTUAL_HEIGHT = 640
 ARROW_HEIGHT = 123
 ARROW_WIDTH = 123
 
+DRAG_HEIGHT = 63
+DRAG_WIDTH = 65
+
+DRAG_HEAD_HEIGHT = 5
+DRAG_HEAD_WIDTH = 65
+
 DIRECTIONS = {
-    "up",
+    "left",
     "down",
+    "up",
     "right",
-    "light"
+}
+
+ARROWS_X_COORDINATE = {
+    10,
+    90,
+    180,
+    270
 }
 
 ARROW_COLORS = {
-    ["up"] = "green",
-    ["down"] = "blue",
     ["left"] = "orange",
+    ["down"] = "blue",
+    ["up"] = "green",
     ["right"] = "red"
 }
 

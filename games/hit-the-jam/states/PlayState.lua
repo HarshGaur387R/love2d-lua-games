@@ -3,6 +3,16 @@ require "classes.Arrow"
 require "classes.MarginBox"
 local JSON = require "utilities.decode-json"
 
+-- These are hard coded coordinates
+local X_COORDINATES = {
+    3,
+    96.8,
+    190.6,
+    284.4
+}
+
+
+
 PlayState = BaseState:extend()
 
 function PlayState:enter()
@@ -17,13 +27,22 @@ function PlayState:enter()
 
     local level_song_path = CurrentChapter["levels"][CurrentLevel]["song"]
     self.levelSong = love.audio.newSource(level_song_path, "static")
+
+    -- StrumLines has 2 arrays for player 1 and player 2
+    -- note_lanes contains four lane and each lane has multiple notes
+    self.note_lanes = self.levelData.strumLines[1]
+    self.scroll_speed = 900
+    self.hitZone_y = 547
+    self.active_indices = { 1, 1, 1, 1 }
+
     self.levelSong:play()
 
     -- Assigning Arrow Buttons
-    UpArrow = Arrow(10, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("up"), false, "up", function() end)
-    LeftArrow = Arrow(90, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("left"), false, "left",
+    LeftArrow = Arrow(10, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("left"), false, "left",
         function() end)
-    DownArrow = Arrow(180, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("down"), false, "down",
+    DownArrow = Arrow(90, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("down"), false, "down",
+        function() end)
+    UpArrow = Arrow(180, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("up"), false, "up",
         function() end)
     RightArrow = Arrow(270, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("right"), false, "right",
         function() end)
@@ -32,15 +51,67 @@ function PlayState:enter()
     ArrowsButtonBox = MarginBox("bottom-horizontal",
         { leftPad = 10, rightPad = 10, bottomPad = 0, topPad = 0 },
         20,
-        { UpArrow, LeftArrow, DownArrow, RightArrow }
+        { LeftArrow, DownArrow, UpArrow, RightArrow }
     )
 end
 
+-- Use tween.lua to update y coordinates according to its time
 function PlayState:update(dt)
     ArrowsButtonBox:update(dt)
+    self.current_time = self.levelSong:tell("seconds")
+
+    for lane_idx = 1, 4 do
+        local notes_in_lane = self.note_lanes[lane_idx]
+        local active_i = self.active_indices[lane_idx]
+
+        while active_i <= #notes_in_lane do
+            local note = notes_in_lane[active_i]
+
+            -- note.start is same as note.time but it makes more sense when used with duration
+            local time_diff = note.start - self.current_time
+
+            -- Missed note check (passed hit zone by 0.3)
+            if time_diff < -0.3 then
+                if not note.was_hit then
+                    -- self:on_miss(note, lane_idx)
+                end
+                active_i = active_i + 1
+            else
+                break
+            end
+        end
+
+        self.active_indices[lane_idx] = active_i
+    end
 end
 
 function PlayState:render()
-    love.graphics.printf(self.levelData.bpm, 0, 100, 100)
     ArrowsButtonBox:render()
+
+    local lane_arrows = { LeftArrow, DownArrow, UpArrow, RightArrow }
+
+    for lane_idx = 1, 4 do
+        local notes_in_lane = self.note_lanes[lane_idx]
+        local lane_arrow = lane_arrows[lane_idx]
+
+        for i = self.active_indices[lane_idx], #notes_in_lane do
+            local note = notes_in_lane[i]
+            local time_diff = note.start - self.current_time
+            local note_y = self.hitZone_y - (time_diff * self.scroll_speed)
+
+            if note_y < -100 then
+                break
+            elseif note_y <= VIRTUAL_HEIGHT + 100 then
+                love.graphics.draw(
+                    GSprites["Arrows"],
+                    lane_arrow.unActiveQuad,
+                    lane_arrow.x,
+                    note_y,
+                    0,
+                    lane_arrow.scale
+                )
+            end
+        end
+    end
+    -- love.graphics.printf(#self.level[4], 0, 130, 100)
 end

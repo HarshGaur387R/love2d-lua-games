@@ -16,14 +16,15 @@ function love.load()
     CurrentLevel = 1
 
     GSprites = {
-        ["Arrows"] = love.graphics.newImage("assets/images/arrow-buttons.png")
+        ["Arrows"] = love.graphics.newImage("assets/images/arrow-buttons.png"),
+        ["Drag"] = love.graphics.newImage("assets/images/arrow-drag.png")
     }
     GStateMachine = StateMachine {
         ["play"] = function() return PlayState() end,
         ["countDown"] = function() return CountDownState() end
     }
 
-    GStateMachine:change("countDown")
+    GStateMachine:change("play")
 
     love.keyboard.keysPressed = {}
     love.keyboard.keysReleased = {}
@@ -81,10 +82,10 @@ function love.update(dt)
 end
 
 function love.draw()
-    love.graphics.clear(0, 1, 0, 1) -- green, background color testing only
+    -- love.graphics.clear(0, 1, 0, 1) -- green, background color testing only
 
     push.start()
-    love.graphics.clear(1, 0, 0, 1) -- red, canvas color, testing only
+    -- love.graphics.clear(1, 0, 0, 1) -- red, canvas color, testing only
     love.graphics.setFont(pixelFont)
 
     GStateMachine:render()
