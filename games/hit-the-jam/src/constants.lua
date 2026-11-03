@@ -3,17 +3,40 @@ VIRTUAL_HEIGHT = 640
 ARROW_HEIGHT = 123
 ARROW_WIDTH = 123
 
+DRAG_HEIGHT = 63
+DRAG_WIDTH = 65
+
+DRAG_TAIL_HEIGHT = 5
+DRAG_TAIL_WIDTH = 65
+
+DRAG_FILLER_HEIGHT = 60 -- this helps to fill the gap between drag bar and arrow
+
+NOTE_LANE_X_CORD = {
+    left = 10,
+    down = 90,
+    up = 180,
+    right = 270
+}
+
+
 DIRECTIONS = {
-    "up",
+    "left",
     "down",
+    "up",
     "right",
-    "light"
+}
+
+ARROWS_X_COORDINATE = {
+    10,
+    90,
+    180,
+    270
 }
 
 ARROW_COLORS = {
-    ["up"] = "green",
-    ["down"] = "blue",
     ["left"] = "orange",
+    ["down"] = "blue",
+    ["up"] = "green",
     ["right"] = "red"
 }
 
