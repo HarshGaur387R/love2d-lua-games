@@ -1,5 +1,6 @@
 Object = require "libs.classic"
 require "utilities.get-arrow-quads"
+require "utilities.get-drag-quads"
 require "src.constants"
 require "classes.Arrow"
 require "classes.MarginBox"
