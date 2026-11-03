@@ -1,6 +1,7 @@
 require "states.BaseState"
 require "classes.Arrow"
 require "classes.MarginBox"
+require "classes.Note"
 local JSON = require "utilities.decode-json"
 
 -- These are hard coded coordinates
@@ -31,11 +32,11 @@ function PlayState:enter()
     -- StrumLines has 2 arrays for player 1 and player 2
     -- note_lanes contains four lane and each lane has multiple notes
     self.note_lanes = self.levelData.strumLines[1]
-    self.scroll_speed = 900
+    self.scroll_speed = 800
     self.hitZone_y = 547
     self.active_indices = { 1, 1, 1, 1 }
 
-    self.levelSong:play()
+    -- self.levelSong:play()
 
     -- Assigning Arrow Buttons
     LeftArrow = Arrow(10, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("left"), false, "left",
@@ -46,6 +47,7 @@ function PlayState:enter()
         function() end)
     RightArrow = Arrow(270, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("right"), false, "right",
         function() end)
+
 
     -- Assigning them to MarginBox
     ArrowsButtonBox = MarginBox("bottom-horizontal",
@@ -88,6 +90,19 @@ end
 function PlayState:render()
     ArrowsButtonBox:render()
 
+    local left_note = Note(50, 200, "left") -- start and duration should come from json_data of notes
+    local right_note = Note(50, 300, "right")
+    local up_note = Note(50, 400, "up")
+    local down_note = Note(50, 250, "down")
+    up_note:render()
+    left_note:render()
+    right_note:render()
+    down_note:render()
+end
+
+--[[ function PlayState:render()
+    ArrowsButtonBox:render()
+
     local lane_arrows = { LeftArrow, DownArrow, UpArrow, RightArrow }
 
     for lane_idx = 1, 4 do
@@ -114,4 +129,4 @@ function PlayState:render()
         end
     end
     -- love.graphics.printf(#self.level[4], 0, 130, 100)
-end
+end ]]
