@@ -6,8 +6,8 @@ require "src.constants"
 
 Note = Object:extend()
 
----@param start number
----@param duration number
+---@param start number Song time in seconds when the arrow reaches the hit zone
+---@param duration number Hold duration in seconds
 ---@param type string -- left, right, up and down
 function Note:new(start, duration, type)
     self.start    = start
@@ -18,16 +18,15 @@ function Note:new(start, duration, type)
     self.scale    = 0.6
     self.head     = Arrow(
         NOTE_LANE_X_CORD[type],
-        start + (DRAG_TAIL_HEIGHT + duration) * 0.6,
+        0,
         GetArrowQuads(type),
         false, type,
         function() end)
 
     self.drag     = nil
 
-    -- if duration is greater than 200ms then create a drag in note
-    if duration >= 200 then
-        self.drag = Drag(start, duration, true, type)
+    if duration > 0 then
+        self.drag = Drag(true, type)
     end
 end
 
@@ -35,9 +34,15 @@ function Note:update(dt)
 
 end
 
-function Note:render()
-    if self.drag then
-        self.drag:render()
+function Note:render(headY, scrollSpeed)
+    self.head.y = headY
+
+    if self.active then
+        if self.drag then
+            local length = self.duration * scrollSpeed
+            self.drag:render(headY - length, length)
+        end
+
+        self.head:render()
     end
-    self.head:render()
 end
