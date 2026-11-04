@@ -12,11 +12,18 @@ DRAG_TAIL_WIDTH = 65
 DRAG_FILLER_HEIGHT = 60 -- this helps to fill the gap between drag bar and arrow
 
 NOTE_LANE_X_CORD = {
+    left = 3,
+    down = 96.8,
+    up = 190.6,
+    right = 284.4
+}
+
+--[[ NOTE_LANE_X_CORD = {
     left = 10,
     down = 90,
     up = 180,
     right = 270
-}
+} ]]
 
 
 DIRECTIONS = {
