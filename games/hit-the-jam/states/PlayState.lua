@@ -5,15 +5,6 @@ require "classes.Note"
 local JSON = require "utilities.decode-json"
 
 -- These are hard coded coordinates
-local X_COORDINATES = {
-    3,
-    96.8,
-    190.6,
-    284.4
-}
-
-
-
 PlayState = BaseState:extend()
 
 function PlayState:enter()
@@ -36,7 +27,7 @@ function PlayState:enter()
     self.hitZone_y = 547
     self.active_indices = { 1, 1, 1, 1 }
 
-    -- self.levelSong:play()
+    self.levelSong:play()
 
     -- Assigning Arrow Buttons
     LeftArrow = Arrow(10, VIRTUAL_HEIGHT - ARROW_HEIGHT + Y_Constant, GetArrowQuads("left"), false, "left",
@@ -55,6 +46,15 @@ function PlayState:enter()
         20,
         { LeftArrow, DownArrow, UpArrow, RightArrow }
     )
+
+    self.left_notes = {}
+
+    for _, chartNote in ipairs(self.note_lanes[1]) do
+        table.insert(
+            self.left_notes,
+            Note(chartNote.start, chartNote.duration, "left")
+        )
+    end
 end
 
 -- Use tween.lua to update y coordinates according to its time
@@ -88,16 +88,20 @@ function PlayState:update(dt)
 end
 
 function PlayState:render()
-    ArrowsButtonBox:render()
+    local currentTime = self.levelSong:tell("seconds")
 
-    local left_note = Note(50, 200, "left") -- start and duration should come from json_data of notes
-    local right_note = Note(50, 300, "right")
-    local up_note = Note(50, 400, "up")
-    local down_note = Note(50, 250, "down")
-    up_note:render()
-    left_note:render()
-    right_note:render()
-    down_note:render()
+    for _, note in ipairs(self.left_notes) do
+        local headY = self.hitZone_y
+            - ((note.start - currentTime) * self.scroll_speed)
+        local tailY = headY - (note.duration * self.scroll_speed)
+        local bottomY = headY + (ARROW_HEIGHT * note.scale)
+
+        if bottomY >= 0 and tailY <= VIRTUAL_HEIGHT then
+            note:render(headY, self.scroll_speed)
+        end
+    end
+
+    ArrowsButtonBox:render()
 end
 
 --[[ function PlayState:render()
