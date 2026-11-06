@@ -47,13 +47,15 @@ function PlayState:enter()
         { LeftArrow, DownArrow, UpArrow, RightArrow }
     )
 
-    self.left_notes = {}
+    self.constructed_lanes = { {}, {}, {}, {} }
 
-    for _, chartNote in ipairs(self.note_lanes[1]) do
-        table.insert(
-            self.left_notes,
-            Note(chartNote.start, chartNote.duration, "left")
-        )
+    for i, lane in ipairs(self.note_lanes) do
+        for _, chartNote in ipairs(lane) do
+            table.insert(
+                self.constructed_lanes[i],
+                Note(chartNote.start, chartNote.duration, DIRECTIONS[i])
+            )
+        end
     end
 end
 
@@ -89,48 +91,27 @@ end
 
 function PlayState:render()
     local currentTime = self.levelSong:tell("seconds")
+    for i, lane in ipairs(self.constructed_lanes) do
+        for j, note in ipairs(lane) do
+            local headY = self.hitZone_y
+                - ((note.start - currentTime) * self.scroll_speed)
+            local tailY = headY - (note.duration * self.scroll_speed)
+            local bottomY = headY + (ARROW_HEIGHT * note.scale)
 
-    for _, note in ipairs(self.left_notes) do
-        local headY = self.hitZone_y
-            - ((note.start - currentTime) * self.scroll_speed)
-        local tailY = headY - (note.duration * self.scroll_speed)
-        local bottomY = headY + (ARROW_HEIGHT * note.scale)
-
-        if bottomY >= 0 and tailY <= VIRTUAL_HEIGHT then
-            note:render(headY, self.scroll_speed)
-        end
-    end
-
-    ArrowsButtonBox:render()
-end
-
---[[ function PlayState:render()
-    ArrowsButtonBox:render()
-
-    local lane_arrows = { LeftArrow, DownArrow, UpArrow, RightArrow }
-
-    for lane_idx = 1, 4 do
-        local notes_in_lane = self.note_lanes[lane_idx]
-        local lane_arrow = lane_arrows[lane_idx]
-
-        for i = self.active_indices[lane_idx], #notes_in_lane do
-            local note = notes_in_lane[i]
-            local time_diff = note.start - self.current_time
-            local note_y = self.hitZone_y - (time_diff * self.scroll_speed)
-
-            if note_y < -100 then
-                break
-            elseif note_y <= VIRTUAL_HEIGHT + 100 then
-                love.graphics.draw(
-                    GSprites["Arrows"],
-                    lane_arrow.unActiveQuad,
-                    lane_arrow.x,
-                    note_y,
-                    0,
-                    lane_arrow.scale
-                )
+            if bottomY >= 0 and tailY <= VIRTUAL_HEIGHT then
+                note:render(headY, self.scroll_speed)
             end
         end
     end
-    -- love.graphics.printf(#self.level[4], 0, 130, 100)
-end ]]
+
+    ArrowsButtonBox:render()
+    local totalMilliseconds = math.floor(currentTime * 1000)
+    local minutes = math.floor(totalMilliseconds / 60000)
+    local seconds = math.floor(totalMilliseconds / 1000) % 60
+    local milliseconds = totalMilliseconds % 1000
+    love.graphics.print(
+        string.format("Music: %02d-%02d-%03d", minutes, seconds, milliseconds),
+        10,
+        10
+    )
+end
