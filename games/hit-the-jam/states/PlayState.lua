@@ -73,6 +73,33 @@ function PlayState:update(dt)
         return
     end
 
+    local seekTime = self.levelSong:tell("seconds")
+
+    if love.keyboard.wasPressed("j") then
+        seekTime = math.max(0, seekTime - 1)
+    elseif love.keyboard.wasPressed("k") then
+        seekTime = math.min(self.levelSong:getDuration("seconds"), seekTime + 1)
+    else
+        seekTime = nil
+    end
+
+    if seekTime then
+        self.levelSong:seek(seekTime, "seconds")
+        self.current_time = seekTime
+
+        -- Re-sync note processing after seeking backward or forward.
+        for lane_idx = 1, 4 do
+            local lane = self.note_lanes[lane_idx]
+            local active_i = 1
+
+            while active_i <= #lane and lane[active_i].start < seekTime - 0.3 do
+                active_i = active_i + 1
+            end
+
+            self.active_indices[lane_idx] = active_i
+        end
+    end
+
     if self.isPaused then
         return
     end
