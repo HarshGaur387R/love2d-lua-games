@@ -26,6 +26,7 @@ function PlayState:enter()
     self.scroll_speed = 800
     self.hitZone_y = 547
     self.active_indices = { 1, 1, 1, 1 }
+    self.isPaused = false
 
     self.levelSong:play()
 
@@ -61,6 +62,21 @@ end
 
 -- Use tween.lua to update y coordinates according to its time
 function PlayState:update(dt)
+    if love.keyboard.wasPressed("p") then
+        if self.isPaused then
+            self.levelSong:play()
+            self.isPaused = false
+        else
+            self.levelSong:pause()
+            self.isPaused = true
+        end
+        return
+    end
+
+    if self.isPaused then
+        return
+    end
+
     ArrowsButtonBox:update(dt)
     self.current_time = self.levelSong:tell("seconds")
 
