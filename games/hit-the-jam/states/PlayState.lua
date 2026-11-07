@@ -47,6 +47,7 @@ function PlayState:enter()
         20,
         { LeftArrow, DownArrow, UpArrow, RightArrow }
     )
+    self.arrowButtons = { LeftArrow, DownArrow, UpArrow, RightArrow }
 
     self.constructed_lanes = { {}, {}, {}, {} }
 
@@ -134,6 +135,22 @@ end
 
 function PlayState:render()
     local currentTime = self.levelSong:tell("seconds")
+
+    for i, button in ipairs(self.arrowButtons) do
+        if button.active then
+            local color = ARROW_COLOR_VALUES[DIRECTIONS[i]]
+            love.graphics.setColor(color[1], color[2], color[3], 0.25)
+            love.graphics.rectangle(
+                "fill",
+                button.x,
+                0,
+                ARROW_WIDTH * button.scale,
+                VIRTUAL_HEIGHT
+            )
+        end
+    end
+    love.graphics.setColor(1, 1, 1, 1)
+
     for i, lane in ipairs(self.constructed_lanes) do
         for j, note in ipairs(lane) do
             local headY = self.hitZone_y
