@@ -26,6 +26,7 @@ function PlayState:enter()
     self.scroll_speed = 800
     self.hitZone_y = 547
     self.active_indices = { 1, 1, 1, 1 }
+    self.isPaused = false
 
     self.levelSong:play()
 
@@ -46,6 +47,7 @@ function PlayState:enter()
         20,
         { LeftArrow, DownArrow, UpArrow, RightArrow }
     )
+    self.arrowButtons = { LeftArrow, DownArrow, UpArrow, RightArrow }
 
     self.constructed_lanes = { {}, {}, {}, {} }
 
@@ -61,6 +63,48 @@ end
 
 -- Use tween.lua to update y coordinates according to its time
 function PlayState:update(dt)
+    if love.keyboard.wasPressed("p") then
+        if self.isPaused then
+            self.levelSong:play()
+            self.isPaused = false
+        else
+            self.levelSong:pause()
+            self.isPaused = true
+        end
+        return
+    end
+
+    local seekTime = self.levelSong:tell("seconds")
+
+    if love.keyboard.wasPressed("j") then
+        seekTime = math.max(0, seekTime - 1)
+    elseif love.keyboard.wasPressed("k") then
+        seekTime = math.min(self.levelSong:getDuration("seconds"), seekTime + 1)
+    else
+        seekTime = nil
+    end
+
+    if seekTime then
+        self.levelSong:seek(seekTime, "seconds")
+        self.current_time = seekTime
+
+        -- Re-sync note processing after seeking backward or forward.
+        for lane_idx = 1, 4 do
+            local lane = self.note_lanes[lane_idx]
+            local active_i = 1
+
+            while active_i <= #lane and lane[active_i].start < seekTime - 0.3 do
+                active_i = active_i + 1
+            end
+
+            self.active_indices[lane_idx] = active_i
+        end
+    end
+
+    if self.isPaused then
+        return
+    end
+
     ArrowsButtonBox:update(dt)
     self.current_time = self.levelSong:tell("seconds")
 
@@ -91,6 +135,22 @@ end
 
 function PlayState:render()
     local currentTime = self.levelSong:tell("seconds")
+
+    for i, button in ipairs(self.arrowButtons) do
+        if button.active then
+            local color = ARROW_COLOR_VALUES[DIRECTIONS[i]]
+            love.graphics.setColor(color[1], color[2], color[3], 0.25)
+            love.graphics.rectangle(
+                "fill",
+                button.x,
+                0,
+                ARROW_WIDTH * button.scale,
+                VIRTUAL_HEIGHT
+            )
+        end
+    end
+    love.graphics.setColor(1, 1, 1, 1)
+
     for i, lane in ipairs(self.constructed_lanes) do
         for j, note in ipairs(lane) do
             local headY = self.hitZone_y
