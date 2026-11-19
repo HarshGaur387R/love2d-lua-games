@@ -27,6 +27,7 @@ function PlayState:enter()
     self.hitZone_y = 547
     self.active_indices = { 1, 1, 1, 1 }
     self.isPaused = false
+    self.hitMessage = nil
 
     self.levelSong:play()
 
@@ -108,6 +109,30 @@ function PlayState:update(dt)
     ArrowsButtonBox:update(dt)
     self.current_time = self.levelSong:tell("seconds")
 
+    if self.hitMessage then
+        self.hitMessage.timeLeft = self.hitMessage.timeLeft - dt
+        if self.hitMessage.timeLeft <= 0 then
+            self.hitMessage = nil
+        end
+    end
+
+    for lane_idx, button in ipairs(self.arrowButtons) do
+        if button.pressed then
+            local note = self.note_lanes[lane_idx][self.active_indices[lane_idx]]
+            if note and not note.was_hit and math.abs(note.start - self.current_time) <= 0.2 then
+                note.was_hit = true
+                self.constructed_lanes[lane_idx][self.active_indices[lane_idx]].active = false
+
+                local direction = DIRECTIONS[lane_idx]
+                self.hitMessage = {
+                    text = string.format("%s Arrow pressed!!", ARROW_COLORS[direction]),
+                    color = ARROW_COLOR_VALUES[direction],
+                    timeLeft = 1
+                }
+            end
+        end
+    end
+
     for lane_idx = 1, 4 do
         local notes_in_lane = self.note_lanes[lane_idx]
         local active_i = self.active_indices[lane_idx]
@@ -115,17 +140,21 @@ function PlayState:update(dt)
         while active_i <= #notes_in_lane do
             local note = notes_in_lane[active_i]
 
-            -- note.start is same as note.time but it makes more sense when used with duration
-            local time_diff = note.start - self.current_time
-
-            -- Missed note check (passed hit zone by 0.3)
-            if time_diff < -0.3 then
-                if not note.was_hit then
-                    -- self:on_miss(note, lane_idx)
-                end
+            if note.was_hit then
                 active_i = active_i + 1
             else
-                break
+                -- note.start is same as note.time but it makes more sense when used with duration
+                local time_diff = note.start - self.current_time
+
+                -- Missed note check (passed hit zone by 0.3)
+                if time_diff < -0.3 then
+                    if not note.was_hit then
+                        -- self:on_miss(note, lane_idx)
+                    end
+                    active_i = active_i + 1
+                else
+                    break
+                end
             end
         end
 
@@ -136,6 +165,7 @@ end
 function PlayState:render()
     local currentTime = self.levelSong:tell("seconds")
 
+    -- Highlighting active button lane.
     for i, button in ipairs(self.arrowButtons) do
         if button.active then
             local color = ARROW_COLOR_VALUES[DIRECTIONS[i]]
@@ -149,8 +179,12 @@ function PlayState:render()
             )
         end
     end
+
+    -- Render color reset here.
     love.graphics.setColor(1, 1, 1, 1)
 
+
+    -- Rendering falling notes.
     for i, lane in ipairs(self.constructed_lanes) do
         for j, note in ipairs(lane) do
             local headY = self.hitZone_y
@@ -164,6 +198,7 @@ function PlayState:render()
         end
     end
 
+    -- Rendering arrow buttons.
     ArrowsButtonBox:render()
     local totalMilliseconds = math.floor(currentTime * 1000)
     local minutes = math.floor(totalMilliseconds / 60000)
@@ -174,4 +209,11 @@ function PlayState:render()
         10,
         10
     )
+
+    if self.hitMessage then
+        local color = self.hitMessage.color
+        love.graphics.setColor(color[1], color[2], color[3], 1)
+        love.graphics.printf(self.hitMessage.text, 0, 40, VIRTUAL_WIDTH, "center")
+        love.graphics.setColor(1, 1, 1, 1)
+    end
 end

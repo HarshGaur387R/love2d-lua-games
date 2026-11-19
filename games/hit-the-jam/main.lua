@@ -24,6 +24,8 @@ function love.load()
         ["countDown"] = function() return CountDownState() end
     }
 
+    SCORE = 0
+
     GStateMachine:change("play")
 
     love.keyboard.keysPressed = {}
@@ -60,8 +62,8 @@ function love.keyboard.wasReleased(key)
     end
 end
 
-function love.touchpressed(id)
-    table.insert(love.touch.pressedTouches, id)
+function love.touchpressed(id, x, y)
+    table.insert(love.touch.pressedTouches, { id = id, x = x, y = y })
 end
 
 function love.touchreleased(id, x, y)
@@ -82,7 +84,7 @@ function love.update(dt)
 end
 
 function love.draw()
-    love.graphics.clear(0, 1, 0, 1) -- green, background color testing only
+    -- love.graphics.clear(0, 1, 0, 1) -- green, background color testing only
 
     push.start()
     -- love.graphics.clear(1, 0, 0, 1) -- red, canvas color, testing only
