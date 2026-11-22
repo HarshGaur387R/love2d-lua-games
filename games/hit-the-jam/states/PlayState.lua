@@ -27,7 +27,7 @@ function PlayState:enter()
     self.hitZone_y = 547
     self.active_indices = { 1, 1, 1, 1 }
     self.isPaused = false
-    self.hitMessage = nil
+    self.hitMessages = {}
 
     self.levelSong:play()
 
@@ -109,24 +109,28 @@ function PlayState:update(dt)
     ArrowsButtonBox:update(dt)
     self.current_time = self.levelSong:tell("seconds")
 
-    if self.hitMessage then
-        self.hitMessage.timeLeft = self.hitMessage.timeLeft - dt
-        if self.hitMessage.timeLeft <= 0 then
-            self.hitMessage = nil
+    for lane_idx, hitMessage in pairs(self.hitMessages) do
+        hitMessage.timeLeft = hitMessage.timeLeft - dt
+        if hitMessage.timeLeft <= 0 then
+            self.hitMessages[lane_idx] = nil
         end
     end
 
     for lane_idx, button in ipairs(self.arrowButtons) do
         if button.pressed then
             local note = self.note_lanes[lane_idx][self.active_indices[lane_idx]]
-            if note and not note.was_hit and math.abs(note.start - self.current_time) <= 0.2 then
+            if note and not note.was_hit and math.abs(note.start - self.current_time) <= 0.2 then -- can be change
                 note.was_hit = true
-                self.constructed_lanes[lane_idx][self.active_indices[lane_idx]].active = false
+                local visual_note = self.constructed_lanes[lane_idx][self.active_indices[lane_idx]]
+                visual_note.active = false
 
                 local direction = DIRECTIONS[lane_idx]
-                self.hitMessage = {
-                    text = string.format("%s Arrow pressed!!", ARROW_COLORS[direction]),
+                self.hitMessages[lane_idx] = {
+                    text = "Hit",
                     color = ARROW_COLOR_VALUES[direction],
+                    x = visual_note.head.x,
+                    y = self.hitZone_y,
+                    width = ARROW_WIDTH * visual_note.head.scale,
                     timeLeft = 1
                 }
             end
@@ -210,10 +214,16 @@ function PlayState:render()
         10
     )
 
-    if self.hitMessage then
-        local color = self.hitMessage.color
+    for _, hitMessage in pairs(self.hitMessages) do
+        local color = hitMessage.color
         love.graphics.setColor(color[1], color[2], color[3], 1)
-        love.graphics.printf(self.hitMessage.text, 0, 40, VIRTUAL_WIDTH, "center")
-        love.graphics.setColor(1, 1, 1, 1)
+        love.graphics.printf(
+            hitMessage.text,
+            hitMessage.x,
+            hitMessage.y - 30,
+            hitMessage.width,
+            "center"
+        )
     end
+    love.graphics.setColor(1, 1, 1, 1)
 end
