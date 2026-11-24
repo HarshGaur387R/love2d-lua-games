@@ -4,6 +4,16 @@ require "classes.MarginBox"
 require "classes.Note"
 local JSON = require "utilities.decode-json"
 
+local PERFECT_WINDOW = 0.05
+local JUDGMENT_DURATION = 0.8
+local JUDGMENT_RISE = 45
+local JUDGMENT_COLORS = {
+    Perfect = { 0.35, 1, 0.55 },
+    Early = { 0.35, 0.8, 1 },
+    Late = { 1, 0.7, 0.3 },
+    Miss = { 1, 0.3, 0.3 }
+}
+
 -- These are hard coded coordinates
 PlayState = BaseState:extend()
 
@@ -110,29 +120,49 @@ function PlayState:update(dt)
     self.current_time = self.levelSong:tell("seconds")
 
     for lane_idx, hitMessage in pairs(self.hitMessages) do
-        hitMessage.timeLeft = hitMessage.timeLeft - dt
-        if hitMessage.timeLeft <= 0 then
+        hitMessage.elapsed = hitMessage.elapsed + dt
+        local progress = math.min(hitMessage.elapsed / JUDGMENT_DURATION, 1)
+        hitMessage.y = hitMessage.startY - JUDGMENT_RISE * progress
+        hitMessage.alpha = 1 - progress
+        if progress >= 1 then
             self.hitMessages[lane_idx] = nil
         end
     end
 
     for lane_idx, button in ipairs(self.arrowButtons) do
-        if button.pressed then
-            local note = self.note_lanes[lane_idx][self.active_indices[lane_idx]]
-            if note and not note.was_hit and math.abs(note.start - self.current_time) <= 0.2 then -- can be change
-                note.was_hit = true
-                local visual_note = self.constructed_lanes[lane_idx][self.active_indices[lane_idx]]
-                visual_note.active = false
+        local note_index = self.active_indices[lane_idx]
+        local note = self.note_lanes[lane_idx][note_index]
+        local visual_note = self.constructed_lanes[lane_idx][note_index]
 
-                local direction = DIRECTIONS[lane_idx]
-                self.hitMessages[lane_idx] = {
-                    text = "Hit",
-                    color = ARROW_COLOR_VALUES[direction],
-                    x = visual_note.head.x,
-                    y = self.hitZone_y,
-                    width = ARROW_WIDTH * visual_note.head.scale,
-                    timeLeft = 1
-                }
+        if note and not note.was_hit then
+            if visual_note.drag then
+                if button.pressed and not note.hold_started and not note.hold_failed
+                    and math.abs(note.start - self.current_time) <= 0.2 then
+                    note.hold_started = true
+                    note.hold_judgment = self:getJudgment(self.current_time - note.start)
+                    self.hitMessages[lane_idx] = nil
+                end
+
+                if note.hold_started then
+                    if not button.active then
+                        note.hold_started = false
+                        note.hold_failed = true
+                        visual_note.active = false
+                        self:showJudgment(lane_idx, visual_note, "Miss")
+                    elseif self.current_time >= note.start + note.duration then
+                        note.was_hit = true
+                        visual_note.active = false
+                        self:showJudgment(lane_idx, visual_note, note.hold_judgment)
+                    end
+                end
+            elseif button.pressed and math.abs(note.start - self.current_time) <= 0.2 then
+                note.was_hit = true
+                visual_note.active = false
+                self:showJudgment(
+                    lane_idx,
+                    visual_note,
+                    self:getJudgment(self.current_time - note.start)
+                )
             end
         end
     end
@@ -144,17 +174,22 @@ function PlayState:update(dt)
         while active_i <= #notes_in_lane do
             local note = notes_in_lane[active_i]
 
-            if note.was_hit then
+            if note.was_hit or note.hold_failed then
                 active_i = active_i + 1
+            elseif note.hold_started then
+                break
             else
                 -- note.start is same as note.time but it makes more sense when used with duration
                 local time_diff = note.start - self.current_time
 
                 -- Missed note check (passed hit zone by 0.3)
                 if time_diff < -0.3 then
-                    if not note.was_hit then
-                        -- self:on_miss(note, lane_idx)
-                    end
+                    self:showJudgment(
+                        lane_idx,
+                        self.constructed_lanes[lane_idx][active_i],
+                        "Miss"
+                    )
+                    self.constructed_lanes[lane_idx][active_i].active = false
                     active_i = active_i + 1
                 else
                     break
@@ -164,6 +199,29 @@ function PlayState:update(dt)
 
         self.active_indices[lane_idx] = active_i
     end
+end
+
+function PlayState:getJudgment(offset)
+    if math.abs(offset) <= PERFECT_WINDOW then
+        return "Perfect"
+    elseif offset < 0 then
+        return "Early"
+    end
+
+    return "Late"
+end
+
+function PlayState:showJudgment(lane_idx, visual_note, judgment)
+    self.hitMessages[lane_idx] = {
+        text = judgment,
+        color = JUDGMENT_COLORS[judgment],
+        x = visual_note.head.x,
+        y = self.hitZone_y - 30,
+        startY = self.hitZone_y - 30,
+        width = ARROW_WIDTH * visual_note.head.scale,
+        elapsed = 0,
+        alpha = 1
+    }
 end
 
 function PlayState:render()
@@ -216,11 +274,11 @@ function PlayState:render()
 
     for _, hitMessage in pairs(self.hitMessages) do
         local color = hitMessage.color
-        love.graphics.setColor(color[1], color[2], color[3], 1)
+        love.graphics.setColor(color[1], color[2], color[3], hitMessage.alpha)
         love.graphics.printf(
             hitMessage.text,
             hitMessage.x,
-            hitMessage.y - 30,
+            hitMessage.y,
             hitMessage.width,
             "center"
         )
