@@ -4,6 +4,7 @@ require "src.dependencies"
 local pixelFont
 
 function love.load()
+    print("[gfx]", love.graphics.getRendererInfo())
     love.graphics.setDefaultFilter("nearest", "nearest")
     pixelFont = love.graphics.newFont("assets/fonts/font.ttf", 32)
 
@@ -91,5 +92,7 @@ function love.draw()
     love.graphics.setFont(pixelFont)
 
     GStateMachine:render()
+    love.graphics.setColor(0, 1, 0, 1)
+    love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 6, 50)
     push.finish()
 end
