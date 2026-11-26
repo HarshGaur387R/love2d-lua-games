@@ -39,6 +39,11 @@ function PlayState:enter()
     self.isPaused = false
     self.hitMessages = {}
 
+    local highlightPixelData = love.image.newImageData(1, 1)
+    highlightPixelData:setPixel(0, 0, 1, 1, 1, 1)
+    self.highlightPixel = love.graphics.newImage(highlightPixelData)
+    self.highlightPixel:setFilter("nearest", "nearest")
+
     self.levelSong:play()
 
     -- Assigning Arrow Buttons
@@ -227,20 +232,41 @@ end
 function PlayState:render()
     local currentTime = self.levelSong:tell("seconds")
 
+    local anyActive = false
+    for _, button in ipairs(self.arrowButtons) do
+        if button.active then
+            anyActive = true; break
+        end
+    end
+    local trace = anyActive and not self._traceWasActive
+    self._traceWasActive = anyActive
+    if trace then print("[render-trace] before highlight") end
+
+
     -- Highlighting active button lane.
     for i, button in ipairs(self.arrowButtons) do
         if button.active then
             local color = ARROW_COLOR_VALUES[DIRECTIONS[i]]
-            love.graphics.setColor(color[1], color[2], color[3], 0.25)
-            love.graphics.rectangle(
-                "fill",
+            local shade = 0.25
+            love.graphics.setColor(
+                color[1] * shade,
+                color[2] * shade,
+                color[3] * shade,
+                1
+            )
+            love.graphics.draw(
+                self.highlightPixel,
                 button.x,
+                0,
                 0,
                 ARROW_WIDTH * button.scale,
                 VIRTUAL_HEIGHT
             )
         end
     end
+
+
+    if trace then print("[render-trace] after highlight") end
 
     -- Render color reset here.
     love.graphics.setColor(1, 1, 1, 1)
@@ -260,8 +286,13 @@ function PlayState:render()
         end
     end
 
+    if trace then print("[render-trace] after notes") end
+
     -- Rendering arrow buttons.
     ArrowsButtonBox:render()
+
+    if trace then print("[render-trace] after arrows") end
+
     local totalMilliseconds = math.floor(currentTime * 1000)
     local minutes = math.floor(totalMilliseconds / 60000)
     local seconds = math.floor(totalMilliseconds / 1000) % 60
@@ -272,6 +303,7 @@ function PlayState:render()
         10
     )
 
+    -- Drawing hit message
     for _, hitMessage in pairs(self.hitMessages) do
         local color = hitMessage.color
         love.graphics.setColor(color[1], color[2], color[3], hitMessage.alpha)
@@ -283,5 +315,6 @@ function PlayState:render()
             "center"
         )
     end
-    love.graphics.setColor(1, 1, 1, 1)
+
+    love.graphics.setColor(0, 1, 0, 1)
 end
