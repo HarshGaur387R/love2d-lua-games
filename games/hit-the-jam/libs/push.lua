@@ -29,8 +29,8 @@ local settings
 local pushWidth, pushHeight
 local windowWidth, windowHeight
 
-local scale = {x = 0, y = 0}
-local offset = {x = 0, y = 0}
+local scale = { x = 0, y = 0 }
+local offset = { x = 0, y = 0 }
 
 local drawWidth, drawHeight
 
@@ -70,7 +70,7 @@ local function initValues()
 end
 
 local function setupCanvas(canvasTable)
-	table.insert(canvasTable, {name = "_render", private = true}) -- Final render
+	table.insert(canvasTable, { name = "_render", private = true }) -- Final render
 
 	canvases = {}
 
@@ -89,7 +89,7 @@ local function setupCanvas(canvasTable)
 		)
 	end
 
-	canvasOptions = {canvases[1].canvas, stencil = canvases[1].stencil}
+	canvasOptions = { canvases[1].canvas, stencil = canvases[1].stencil }
 end
 
 local function getCanvasTable(name)
@@ -105,9 +105,10 @@ local function start()
 		love.graphics.push()
 		love.graphics.setCanvas(canvasOptions)
 	else
+		love.graphics.push()
 		love.graphics.translate(offset.x, offset.y)
 		love.graphics.setScissor(offset.x, offset.y, pushWidth * scale.x, pushHeight * scale.y)
-		love.graphics.push()
+		-- love.graphics.push()
 		love.graphics.scale(scale.x, scale.y)
 	end
 end
@@ -129,11 +130,11 @@ local function applyShaders(canvas, shaders)
 			table.insert(
 				canvases,
 				{
-			 		name = "_tmp",
-			  		private = true,
-			  		canvas = love.graphics.newCanvas(pushWidth, pushHeight)
-		   		}
-	   		)
+					name = "_tmp",
+					private = true,
+					canvas = love.graphics.newCanvas(pushWidth, pushHeight)
+				}
+			)
 
 			tmp = getCanvasTable("_tmp")
 		end
@@ -173,7 +174,7 @@ local function finish(shader)
 			if not canvasTable.private then
 				local shader = canvasTable.shader
 
-				applyShaders(canvasTable.canvas, type(shader) == "table" and shader or {shader})
+				applyShaders(canvasTable.canvas, type(shader) == "table" and shader or { shader })
 			end
 		end
 		love.graphics.setCanvas()
@@ -185,7 +186,7 @@ local function finish(shader)
 		do
 			local shader = shader or render.shader
 
-			applyShaders(render.canvas, type(shader) == "table" and shader or {shader})
+			applyShaders(render.canvas, type(shader) == "table" and shader or { shader })
 		end
 		love.graphics.pop()
 
@@ -213,7 +214,7 @@ return {
 		initValues()
 
 		if settings.canvas then
-			setupCanvas({"default"})
+			setupCanvas({ "default" })
 		end
 	end,
 
@@ -224,7 +225,7 @@ return {
 		if not settings.canvas then return true end
 
 		canvasTable = getCanvasTable(name)
-		return love.graphics.setCanvas({canvasTable.canvas, stencil = canvasTable.stencil})
+		return love.graphics.setCanvas({ canvasTable.canvas, stencil = canvasTable.stencil })
 	end,
 	setShader = function(name, shader)
 		if not shader then
@@ -252,7 +253,7 @@ return {
 	end,
 	toReal = function(x, y)
 		local realX = offset.x + (drawWidth * x) / pushWidth
-		local realY = offset.y + (drawHeight * y)/ pushHeight
+		local realY = offset.y + (drawHeight * y) / pushHeight
 
 		return realX, realY
 	end,
