@@ -5,4 +5,6 @@ function love.conf(t)
     t.window.fullscreen = false
     t.window.resizable = true
     t.window.vsync = 1
+    t.graphics = t.graphics or {}
+    t.graphics.renderers = { "opengl" }
 end

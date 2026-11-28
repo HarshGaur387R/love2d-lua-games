@@ -4,6 +4,7 @@ require "src.dependencies"
 local pixelFont
 
 function love.load()
+    print("[gfx]", love.graphics.getRendererInfo())
     love.graphics.setDefaultFilter("nearest", "nearest")
     pixelFont = love.graphics.newFont("assets/fonts/font.ttf", 32)
 
@@ -23,6 +24,8 @@ function love.load()
         ["play"] = function() return PlayState() end,
         ["countDown"] = function() return CountDownState() end
     }
+
+    SCORE = 0
 
     GStateMachine:change("play")
 
@@ -60,8 +63,8 @@ function love.keyboard.wasReleased(key)
     end
 end
 
-function love.touchpressed(id)
-    table.insert(love.touch.pressedTouches, id)
+function love.touchpressed(id, x, y)
+    table.insert(love.touch.pressedTouches, { id = id, x = x, y = y })
 end
 
 function love.touchreleased(id, x, y)
@@ -82,12 +85,14 @@ function love.update(dt)
 end
 
 function love.draw()
-    love.graphics.clear(0, 1, 0, 1) -- green, background color testing only
+    -- love.graphics.clear(0, 1, 0, 1) -- green, background color testing only
 
     push.start()
     -- love.graphics.clear(1, 0, 0, 1) -- red, canvas color, testing only
     love.graphics.setFont(pixelFont)
 
     GStateMachine:render()
+    love.graphics.setColor(0, 1, 0, 1)
+    love.graphics.print('FPS: ' .. tostring(love.timer.getFPS()), 6, 50)
     push.finish()
 end
