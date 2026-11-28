@@ -8,6 +8,12 @@ local PERFECT_WINDOW = 0.05
 local JUDGMENT_DURATION = 0.8
 local JUDGMENT_RISE = 45
 local JUDGMENT_FONT_SIZE = 16
+local JUDGMENT_POINTS = {
+    Perfect = 100,
+    Early = 50,
+    Late = 50,
+    Miss = 0
+}
 local JUDGMENT_COLORS = {
     Perfect = { 0.35, 1, 0.55 },
     Early = { 0.35, 0.8, 1 },
@@ -219,6 +225,10 @@ function PlayState:getJudgment(offset)
 end
 
 function PlayState:showJudgment(lane_idx, visual_note, judgment)
+    local points = JUDGMENT_POINTS[judgment]
+    assert(points ~= nil, string.format("Unknown judgment '%s'", tostring(judgment)))
+    SCORE = SCORE + points
+
     self.hitMessages[lane_idx] = {
         text = judgment,
         color = JUDGMENT_COLORS[judgment],
@@ -295,19 +305,27 @@ function PlayState:render()
 
     if trace then print("[render-trace] after arrows") end
 
+    -- Drawing Music timer
     local totalMilliseconds = math.floor(currentTime * 1000)
     local minutes = math.floor(totalMilliseconds / 60000)
     local seconds = math.floor(totalMilliseconds / 1000) % 60
     local milliseconds = totalMilliseconds % 1000
-    love.graphics.print(
+   --[[  love.graphics.print(
         string.format("Music: %02d-%02d-%03d", minutes, seconds, milliseconds),
         10,
         10
-    )
+    ) ]]
 
     -- Drawing hit message
     local currentFont = love.graphics.getFont()
     love.graphics.setFont(self.judgmentFont)
+    local scoreText = string.format("Score: %d", SCORE)
+    love.graphics.print(
+        scoreText,
+        VIRTUAL_WIDTH - self.judgmentFont:getWidth(scoreText) - 10,
+        10
+    )
+
     for _, hitMessage in pairs(self.hitMessages) do
         local color = hitMessage.color
         love.graphics.setColor(color[1], color[2], color[3], hitMessage.alpha)
