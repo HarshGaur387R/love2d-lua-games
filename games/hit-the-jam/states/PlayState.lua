@@ -7,6 +7,7 @@ local JSON = require "utilities.decode-json"
 local PERFECT_WINDOW = 0.05
 local JUDGMENT_DURATION = 0.8
 local JUDGMENT_RISE = 45
+local JUDGMENT_FONT_SIZE = 16
 local JUDGMENT_COLORS = {
     Perfect = { 0.35, 1, 0.55 },
     Early = { 0.35, 0.8, 1 },
@@ -38,6 +39,7 @@ function PlayState:enter()
     self.active_indices = { 1, 1, 1, 1 }
     self.isPaused = false
     self.hitMessages = {}
+    self.judgmentFont = love.graphics.newFont("assets/fonts/font.ttf", JUDGMENT_FONT_SIZE)
 
     local highlightPixelData = love.image.newImageData(1, 1)
     highlightPixelData:setPixel(0, 0, 1, 1, 1, 1)
@@ -304,6 +306,8 @@ function PlayState:render()
     )
 
     -- Drawing hit message
+    local currentFont = love.graphics.getFont()
+    love.graphics.setFont(self.judgmentFont)
     for _, hitMessage in pairs(self.hitMessages) do
         local color = hitMessage.color
         love.graphics.setColor(color[1], color[2], color[3], hitMessage.alpha)
@@ -315,6 +319,7 @@ function PlayState:render()
             "center"
         )
     end
+    love.graphics.setFont(currentFont)
 
     love.graphics.setColor(0, 1, 0, 1)
 end
